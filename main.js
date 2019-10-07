@@ -1,8 +1,12 @@
 
+
 (function () {
-	const MAX_DELAY = 60 // 切课时的最大延迟，单位：秒
+	const MAX_DELAY = 30 // 切课时的最大延迟，单位：秒
 
 	const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
+
+	SpeedFlag = 0
+	VolumeFlag = 0
 
 	const start = async function () {
 		console.log('智慧树助手已启动')
@@ -11,24 +15,32 @@
 			console.log('正在检查')
 			const delay = Math.floor(Math.random() * MAX_DELAY * 1000) + 1000
 
-			if (!/1\.5/.test($('.speedBox').attr('style'))) {
+			// if (!/liuchang/.test($('.definiBox').attr('style'))) {
+			// 	console.log('更改画质')
+			// 	$('.line1bq').click()
+			// }
+
+			if (!/1\.5/.test($('.speedBox').attr('style')) && !SpeedFlag) {
 				console.log('提升到1.5倍速')
+				SpeedFlag = 1
 				$('.speedTab15').click()
 			}
 
-			if (!/liuchang/.test($('.definiBox').attr('style'))) {
-				console.log('更改画质')
-				$('.line1bq').click()
-			}
-
-			if ($('.volumeBox').find('.passVolume').width() != 0) {
+			if ($('.volumeBox').find('.passVolume').width() != 0 && !VolumeFlag) {
 				console.log('静音')
+				VolumeFlag = 1
 				$('.volumeIcon').click()
 			}
 			
 			if ($('.playButton').length > 0) {
+				console.log('本节完成，' + delay / 1000 + ' 秒后将切到下一课')
+				await sleep(delay)
+				$('.current_play').nextAll('.video')[0].click()
+				console.log('已经切换到下一课')
 				console.log('点击播放')
 				$('.playButton').click()
+				SpeedFlag = 0
+				VolumeFlag = 0
 			}
 
 			if ($('.popbtn_cancel')[0]) {
@@ -38,13 +50,10 @@
 				iframe.document.querySelector('.answerOption label').click()
 				await sleep(delay / 2)
 				$('.popbtn_cancel').click()
+
 			}
 
-			if ($('.current_play').find('.progressbar').width() == $('.current_play').find('.progressbar_box').width()) {
-				console.log('本节完成，' + delay / 1000 + ' 秒后将切到下一课')
-				await sleep(delay)
-				$('.current_play').nextAll('.video')[0].click()
-			}
+
 
 			await sleep(1000)
 		}
@@ -52,3 +61,6 @@
 
 	start()
 }())
+
+
+//由wangzexi代码改进而来，增加了两个flag用于判断。
